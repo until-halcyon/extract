@@ -12,7 +12,7 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-icon">✳</span><span>EXCERPT <b>STUDIO</b></span><span class="version">BETA / 0.4</span></div>
+    <div class="brand"><span class="brand-icon">✳</span><span>EXCERPT <b>STUDIO</b></span><span class="version">BETA / 0.42</span></div>
     <div class="header-actions"><span id="save-status">자동 저장됨</span><button class="subtle" id="export-project">프로젝트 저장</button><label class="button subtle" for="import-file">불러오기</label><input type="file" id="import-file" accept=".json,application/json" hidden><button class="primary" id="download-png">↧ 이미지 저장</button></div>
   </header>
   <main class="workspace">
@@ -37,6 +37,9 @@
         <div class="field range-field"><label for="size">글자 크기 <output id="size-label">23px</output></label><input id="size" type="range" min="14" max="38" step="1" value="19"></div>
         <div class="field range-field"><label for="line-height">행간 <output id="line-height-label">1.75</output></label><input id="line-height" type="range" min="1.2" max="2.4" step="0.05" value="1.75"></div>
         <div class="field range-field"><label for="padding">안쪽 여백 <output id="padding-label">64px</output></label><input id="padding" type="range" min="40" max="180" step="4" value="116"></div>
+        <div class="field range-field"><label for="body-letter-spacing">본문 자간 <output id="body-letter-spacing-label">0px</output></label><input id="body-letter-spacing" type="range" min="-1" max="6" step="0.1" value="0"></div>
+        <div class="field range-field"><label for="paragraph-gap">문단 간격 <output id="paragraph-gap-label">16px</output></label><input id="paragraph-gap" type="range" min="0" max="48" step="1" value="16"></div>
+        <div class="field range-field"><label for="body-scale-y">본문 세로 비율 <output id="body-scale-y-label">100%</output></label><input id="body-scale-y" type="range" min="70" max="130" step="1" value="100"></div>
         <div class="separator"></div>
         <p class="group-title">색상 & 캐릭터</p>
         <div class="color-row"><label for="background">배경색</label><input type="color" id="background" value="#f2ede6"></div>
@@ -49,7 +52,8 @@
         <div id="background-image-info" class="image-info">등록된 이미지 없음</div>
         <button id="remove-background" class="reset-style" type="button">배경 이미지 제거</button>
         <div class="field range-field"><label for="image-opacity">이미지 투명도 <output id="image-opacity-label">30%</output></label><input id="image-opacity" type="range" min="0" max="100" step="1" value="30"></div>
-        <div class="field range-field"><label for="image-veil">흰색 베일 (글자 가독성) <output id="image-veil-label">58%</output></label><input id="image-veil" type="range" min="0" max="100" step="1" value="58"></div>
+        <div class="field range-field"><label for="image-veil">오버레이 농도 <output id="image-veil-label">58%</output></label><input id="image-veil" type="range" min="0" max="100" step="1" value="58"></div>
+        <div class="color-row"><label for="image-overlay-color">오버레이 색</label><input type="color" id="image-overlay-color" value="#ffffff"></div>
         <div class="field"><label for="image-fit">이미지 표시 방식</label><select id="image-fit"><option value="cover">페이지 꽉 채우기</option><option value="contain">이미지 전체 보이기</option></select></div>
         <div class="field range-field"><label for="image-x">가로 위치 <output id="image-x-label">50%</output></label><input id="image-x" type="range" min="0" max="100" step="1" value="50"></div>
         <div class="field range-field"><label for="image-y">세로 위치 <output id="image-y-label">50%</output></label><input id="image-y" type="range" min="0" max="100" step="1" value="50"></div>
@@ -60,9 +64,10 @@
         <div class="setting-note">프리셋을 고르면 추천 크기가 자동 입력돼. 숫자를 직접 바꾸면 커스텀 크기로 전환돼. 자동 높이에서는 가로(px)만 고정되고, 세로는 내용 길이에 따라 늘어나.</div>
         <div class="separator"></div>
         <p class="group-title">제목 · 부제목 · 출처</p>
-        <div class="metadata-field"><label for="heading">제목</label><input id="heading" value="첫만남" maxlength="100"><div class="inline-fields"><label>크기 <input id="heading-size" type="number" min="10" max="90" value="27"></label><label>정렬 <select id="heading-align"><option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option></select></label></div></div>
-        <div class="metadata-field"><label for="subtitle">부제목</label><input id="subtitle" value="유령과 재회" placeholder="부제목 (선택)" maxlength="150"><div class="inline-fields"><label>크기 <input id="subtitle-size" type="number" min="10" max="80" value="16"></label><label>정렬 <select id="subtitle-align"><option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option></select></label></div></div>
-        <div class="metadata-field"><label for="source">출처 / 하단 문구</label><input id="source" value="134340  ·  Syndrome × Muse" maxlength="150"><div class="inline-fields"><label>크기 <input id="source-size" type="number" min="10" max="80" value="13"></label><label>정렬 <select id="source-align"><option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option></select></label></div></div>
+        <div class="metadata-field"><div class="meta-head"><label for="heading">제목</label><label class="toggle-inline"><input id="show-heading" type="checkbox" checked> 표시</label></div><input id="heading" value="첫만남" maxlength="100"><div class="inline-fields"><label>크기 <input id="heading-size" type="number" min="10" max="90" value="27"></label><label>정렬 <select id="heading-align"><option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option></select></label></div><div class="inline-fields triad"><label>자간 <input id="heading-letter-spacing" type="number" min="-1" max="10" step="0.1" value="0"></label><label>세로 비율 <input id="heading-scale-y" type="number" min="70" max="130" step="1" value="100"></label><label>부제와 간격 <input id="title-subtitle-gap" type="number" min="0" max="80" step="1" value="10"></label></div></div>
+        <div class="metadata-field"><div class="meta-head"><label for="subtitle">부제목</label><label class="toggle-inline"><input id="show-subtitle" type="checkbox" checked> 표시</label></div><input id="subtitle" value="유령과 재회" placeholder="부제목 (선택)" maxlength="150"><div class="inline-fields"><label>크기 <input id="subtitle-size" type="number" min="10" max="80" value="16"></label><label>정렬 <select id="subtitle-align"><option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option></select></label></div><div class="inline-fields triad"><label>자간 <input id="subtitle-letter-spacing" type="number" min="-1" max="10" step="0.1" value="0"></label><label>세로 비율 <input id="subtitle-scale-y" type="number" min="70" max="130" step="1" value="100"></label><label>본문과 거리 <input id="header-body-gap" type="number" min="0" max="120" step="1" value="28"></label></div></div>
+        <div class="metadata-field"><div class="meta-head"><label for="source">출처 / 하단 문구</label><label class="toggle-inline"><input id="show-source" type="checkbox" checked> 표시</label></div><input id="source" value="134340  ·  Syndrome × Muse" maxlength="150"><div class="inline-fields"><label>크기 <input id="source-size" type="number" min="10" max="80" value="13"></label><label>정렬 <select id="source-align"><option value="left">왼쪽</option><option value="center">가운데</option><option value="right">오른쪽</option></select></label></div><div class="inline-fields triad"><label>자간 <input id="source-letter-spacing" type="number" min="-1" max="10" step="0.1" value="0"></label><label>세로 비율 <input id="source-scale-y" type="number" min="70" max="130" step="1" value="100"></label><label>하단 간격 <input id="source-bottom-gap" type="number" min="0" max="80" step="1" value="0"></label></div></div>
+        <div class="metadata-field"><div class="meta-head"><label>페이지 수 표기</label><label class="toggle-inline"><input id="show-page-number" type="checkbox"> 표시</label></div><div class="inline-fields"><label>크기 <input id="page-number-size" type="number" min="10" max="60" value="12"></label><label>정렬 <select id="page-number-align"><option value="right">오른쪽</option><option value="center">가운데</option><option value="left">왼쪽</option></select></label></div></div>
         <button class="reset-style" id="reset-style">디자인 기본값으로 되돌리기</button>
       </div>
     </aside>
