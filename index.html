@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#15161a">
   <title>EXCERPT STUDIO — AI 채팅 발췌기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Batang&family=Gowun+Dodum&family=Hahmlet:wght@400;700&family=Jua&family=Nanum+Brush+Script&family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&family=Song+Myung&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-icon">✳</span><span>EXCERPT <b>STUDIO</b></span><span class="version">BETA / 0.2</span></div>
-    <div class="header-actions"><span id="save-status">자동 저장됨</span><button class="subtle" id="export-project">프로젝트 저장</button><label class="button subtle" for="import-file">불러오기</label><input type="file" id="import-file" accept=".json,application/json" hidden><button class="primary" id="download-png">↧ PNG 저장</button></div>
+    <div class="brand"><span class="brand-icon">✳</span><span>EXCERPT <b>STUDIO</b></span><span class="version">BETA / 0.3</span></div>
+    <div class="header-actions"><span id="save-status">자동 저장됨</span><button class="subtle" id="export-project">프로젝트 저장</button><label class="button subtle" for="import-file">불러오기</label><input type="file" id="import-file" accept=".json,application/json" hidden><button class="primary" id="download-png">↧ 이미지 저장</button></div>
   </header>
   <main class="workspace">
     <section class="panel editor-panel">
@@ -19,7 +22,7 @@
         <button data-command="bold" title="굵게 (Ctrl+B)"><b>B</b></button><button data-command="italic" title="기울임 (Ctrl+I)"><i>I</i></button><button data-command="underline" title="밑줄 (Ctrl+U)"><u>U</u></button><button data-command="strikeThrough" title="취소선"><s>S</s></button><div class="tool-divider"></div>
         <label class="text-color-control" title="선택한 글자 색상"><span>A</span><input type="color" id="selection-color" value="#b84858"></label><button id="clear-format" title="선택 영역 서식 제거">서식 지우기</button>
       </div>
-      <div class="speaker-bar"><span>현재 문단</span><button class="speaker-choice active" data-speaker="narration">서술</button><button class="speaker-choice" data-speaker="a">화자 A</button><button class="speaker-choice" data-speaker="b">화자 B</button></div>
+      <div class="speaker-bar"><span>현재 문단</span><div id="character-choices" class="character-choices"></div></div>
       <div class="editor-scroll"><div id="editor" class="editor" contenteditable="true" spellcheck="false" aria-label="발췌할 글을 입력하세요"><p>창밖에는 늦은 밤의 비가 내리고 있었다.</p><p data-speaker="a">“아직도 기억해?”</p><p>그는 잠시 시선을 내렸다.</p><p data-speaker="b">“잊은 적 없어.”</p></div></div>
       <div class="editor-footer"><span>팁: 문단 안을 클릭하고 화자를 지정해 봐. 붙여넣기는 일반 텍스트로 처리돼.</span><span id="character-count">0자</span></div>
     </section>
@@ -30,30 +33,33 @@
         <div class="field"><label>디자인 프리셋</label><div class="presets"><button class="preset selected" data-preset="paper" title="페이퍼"><span class="swatch paper"></span><small>페이퍼</small></button><button class="preset" data-preset="night" title="미드나이트"><span class="swatch night"></span><small>나이트</small></button><button class="preset" data-preset="rose" title="로즈"><span class="swatch rose"></span><small>로즈</small></button><button class="preset" data-preset="mono" title="모노"><span class="swatch mono"></span><small>모노</small></button></div></div>
         <div class="separator"></div>
         <p class="group-title">타이포그래피</p>
-        <div class="field"><label for="font">글꼴</label><select id="font"><option value="serif">명조체 / Serif</option><option value="sans">고딕체 / Sans</option><option value="mono">모노스페이스 / Mono</option></select></div>
+        <div class="field"><label for="font">글꼴 (웹폰트 지원)</label><select id="font"><optgroup label="명조 / 세리프"><option value="noto-serif">Noto Serif KR</option><option value="nanum-myeongjo">나눔명조</option><option value="gowun-batang">고운바탕</option><option value="hahmlet">함렛</option><option value="song-myung">송명</option><option value="serif">기본 명조</option></optgroup><optgroup label="고딕 / 손글씨"><option value="noto-sans">Noto Sans KR</option><option value="nanum-gothic">나눔고딕</option><option value="gowun-dodum">고운돋움</option><option value="do-hyeon">도현</option><option value="jua">주아</option><option value="black-han">검은고딕</option><option value="sans">기본 고딕</option></optgroup><optgroup label="기타"><option value="nanum-pen">나눔손글씨 펜</option><option value="nanum-brush">나눔손글씨 붓</option><option value="mono">고정폭</option></optgroup></select><small class="hint">웹폰트는 첫 사용 시 인터넷 연결이 필요해.</small></div>
         <div class="field range-field"><label for="size">글자 크기 <output id="size-label">23px</output></label><input id="size" type="range" min="15" max="40" step="1" value="23"></div>
         <div class="field range-field"><label for="line-height">행간 <output id="line-height-label">1.75</output></label><input id="line-height" type="range" min="1.2" max="2.4" step="0.05" value="1.75"></div>
         <div class="field range-field"><label for="padding">안쪽 여백 <output id="padding-label">64px</output></label><input id="padding" type="range" min="24" max="120" step="4" value="64"></div>
         <div class="separator"></div>
-        <p class="group-title">색상 & 화자</p>
+        <p class="group-title">색상 & 캐릭터</p>
         <div class="color-row"><label for="background">배경색</label><input type="color" id="background" value="#f2ede6"></div>
         <div class="color-row"><label for="foreground">본문색</label><input type="color" id="foreground" value="#2c3545"></div>
-        <div class="color-row"><label for="color-a">화자 A 색상</label><input type="color" id="color-a" value="#ad4052"></div>
-        <div class="color-row"><label for="color-b">화자 B 색상</label><input type="color" id="color-b" value="#345679"></div>
-        <div class="field compact"><label for="name-a">화자 A 이름</label><input id="name-a" value="CHARACTER A" maxlength="35"></div>
-        <div class="field compact"><label for="name-b">화자 B 이름</label><input id="name-b" value="CHARACTER B" maxlength="35"></div>
+        <div class="character-top"><span>캐릭터 목록</span><button id="add-character" class="small-add" type="button">＋ 캐릭터 추가</button></div>
+        <div id="character-list" class="character-list"></div>
         <div class="separator"></div>
         <p class="group-title">이미지 구성</p>
-        <div class="field"><label for="ratio">이미지 비율</label><select id="ratio"><option value="auto">내용에 맞춰 자동</option><option value="1:1">1:1 (정사각형 최소 높이)</option><option value="3:4">3:4 (세로 최소 높이)</option><option value="9:16">9:16 (긴 세로 최소 높이)</option></select></div>
-        <div class="field"><label for="heading">상단 문구</label><input id="heading" value="EXCERPT / 001" maxlength="80"></div>
-        <div class="field"><label for="footer">하단 문구</label><input id="footer" value="— ARCHIVE —" maxlength="80"></div>
+        <div class="field"><label for="ratio">페이지 크기</label><select id="ratio"><option value="auto">자동 높이 (한 장)</option><option value="1:1">정사각형 · 900×900</option><option value="3:4">세로형 · 900×1200</option><option value="9:16">긴 세로 · 900×1600</option><option value="custom">직접 높이 지정</option></select></div>
+        <div class="field" id="custom-height-row" hidden><label for="page-height">고정 페이지 높이 (px)</label><input id="page-height" type="number" min="600" max="4000" step="20" value="1200"></div>
+        <div class="setting-note">고정 크기에서는 글이 넘치면 문장 줄 단위로 다음 페이지에 이어져. 모든 페이지가 같은 크기로 저장돼.</div>
+        <div class="separator"></div>
+        <p class="group-title">제목 · 부제목 · 출처</p>
+        <div class="metadata-field"><label for="heading">제목</label><input id="heading" value="EXCERPT / 001" maxlength="100"><div class="inline-fields"><label>크기 <input id="heading-size" type="number" min="10" max="90" value="22"></label><label>정렬 <select id="heading-align"><option value="left">왼쪽</option><option value="center" selected>가운데</option><option value="right">오른쪽</option></select></label></div></div>
+        <div class="metadata-field"><label for="subtitle">부제목</label><input id="subtitle" placeholder="부제목 (선택)" maxlength="150"><div class="inline-fields"><label>크기 <input id="subtitle-size" type="number" min="10" max="80" value="15"></label><label>정렬 <select id="subtitle-align"><option value="left">왼쪽</option><option value="center" selected>가운데</option><option value="right">오른쪽</option></select></label></div></div>
+        <div class="metadata-field"><label for="source">출처 / 하단 문구</label><input id="source" value="— ARCHIVE —" maxlength="150"><div class="inline-fields"><label>크기 <input id="source-size" type="number" min="10" max="80" value="14"></label><label>정렬 <select id="source-align"><option value="left">왼쪽</option><option value="center" selected>가운데</option><option value="right">오른쪽</option></select></label></div></div>
         <button class="reset-style" id="reset-style">디자인 기본값으로 되돌리기</button>
       </div>
     </aside>
     <section class="panel preview-panel">
       <div class="section-heading"><div><span class="eyebrow">03 / RESULT</span><h2>실시간 미리보기</h2></div><span class="preview-status" id="preview-size">—</span></div>
-      <div class="preview-scroll"><canvas id="preview" aria-label="발췌 이미지 미리보기"></canvas></div>
-      <div class="preview-footer"><span>이미지 저장은 미리보기와 같은 캔버스에서 생성돼.</span><button id="download-png-bottom">PNG 다운로드 ↗</button></div>
+      <div class="preview-scroll" id="preview-scroll"><div id="preview-pages" class="preview-pages"></div></div>
+      <div class="preview-footer"><span id="page-count">총 1페이지</span><button id="download-png-bottom">이미지 저장 ↗</button></div>
     </section>
   </main>
   <div id="toast" role="status" aria-live="polite"></div>
